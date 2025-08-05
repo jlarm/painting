@@ -1,121 +1,109 @@
-<div>
-    <flux:heading size="xl">{{ $competition->title }}</flux:heading>
-    
-    @if($competition->description)
-        <flux:subheading class="mt-2">{{ $competition->description }}</flux:subheading>
-    @endif
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-900">{{ $competition->title }}</h1>
+        @if($competition->description)
+            <p class="mt-2 text-lg text-gray-600 max-w-3xl mx-auto">{{ $competition->description }}</p>
+        @endif
+    </div>
 
-    <flux:card class="mt-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-                <flux:heading size="sm">Reference Image</flux:heading>
-                <img src="{{ Storage::url($competition->reference_image_path) }}" 
-                     alt="{{ $competition->title }}" 
-                     class="rounded-lg shadow-lg max-w-full h-auto mt-2">
+    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="md:col-span-1">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Reference Image</h2>
+                <img src="{{ Storage::url($competition->reference_image_path) }}" alt="{{ $competition->title }}" class="rounded-lg shadow-md w-full h-auto">
             </div>
             
             <div class="md:col-span-2">
-                <flux:heading size="sm">Competition Details</flux:heading>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Competition Details</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <flux:card>
-                        <flux:heading size="xs">Submission Deadline</flux:heading>
-                        <p class="mt-2">{{ $competition->submission_deadline->format('F j, Y g:i A') }}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-600">Submission Deadline</h3>
+                        <p class="text-gray-800 text-sm mt-1">{{ $competition->submission_deadline->format('F j, Y g:i A') }}</p>
                         @if($competition->isSubmissionOpen())
-                            <flux:badge variant="success" class="mt-2">Open</flux:badge>
+                            <span class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Open</span>
                         @else
-                            <flux:badge variant="danger" class="mt-2">Closed</flux:badge>
+                            <span class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Closed</span>
                         @endif
-                    </flux:card>
+                    </div>
                     
-                    <flux:card>
-                        <flux:heading size="xs">Voting Deadline</flux:heading>
-                        <p class="mt-2">
-                            @if($competition->voting_deadline)
-                                {{ $competition->voting_deadline->format('F j, Y g:i A') }}
-                            @else
-                                Not set
-                            @endif
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-600">Voting Deadline</h3>
+                        <p class="text-gray-800 text-sm mt-1">
+                            {{ $competition->voting_deadline ? $competition->voting_deadline->format('F j, Y g:i A') : 'Not set' }}
                         </p>
                         @if($competition->isVotingOpen())
-                            <flux:badge variant="warning" class="mt-2">Open</flux:badge>
+                            <span class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Voting Open</span>
                         @elseif($competition->isClosed())
-                            <flux:badge variant="danger" class="mt-2">Closed</flux:badge>
+                            <span class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Completed</span>
                         @else
-                            <flux:badge variant="info" class="mt-2">Not started</flux:badge>
+                            <span class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Not Started</span>
                         @endif
-                    </flux:card>
+                    </div>
                 </div>
                 
-                <div class="mt-6 space-y-4">
-                    @if(auth()->user()->isAdmin())
-                        <flux:button wire:navigate href="{{ route('competitions.admin') }}" icon="arrow-left">
-                            Back to Admin Dashboard
-                        </flux:button>
-                    @else
-                        @if($competition->isSubmissionOpen())
-                            @if($userHasSubmitted)
-                                <flux:callout variant="success" :heading="'You have already submitted to this competition.'" />
-                            @else
-                                <flux:button wire:navigate href="{{ route('competitions.submit', $competition) }}" variant="primary" icon="plus">
-                                    Submit Your Painting
-                                </flux:button>
+                <div class="mt-6">
+                    @auth
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('competitions.admin') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700">Back to Admin</a>
+                        @else
+                            @if($competition->isSubmissionOpen())
+                                @if($userHasSubmitted)
+                                    <div class="rounded-md bg-green-50 p-4">
+                                        <p class="text-sm font-medium text-green-800">You have already submitted to this competition.</p>
+                                    </div>
+                                @else
+                                    <a href="{{ route('competitions.submit', $competition) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">Submit Your Painting</a>
+                                @endif
+                            @elseif($competition->isVotingOpen())
+                                @if($userHasVoted)
+                                    <div class="rounded-md bg-blue-50 p-4">
+                                        <p class="text-sm font-medium text-blue-800">You have already voted in this competition.</p>
+                                    </div>
+                                @else
+                                    <a href="{{ route('competitions.vote', $competition) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700">Vote for Submissions</a>
+                                @endif
+                            @elseif($competition->isClosed())
+                                <div class="rounded-md bg-gray-50 p-4">
+                                    <p class="text-sm font-medium text-gray-800">This competition is closed.</p>
+                                </div>
                             @endif
-                        @elseif($competition->isVotingOpen())
-                            @if($userHasVoted)
-                                <flux:callout variant="success" :heading="'You have already voted in this competition.'" />
-                            @else
-                                <flux:button wire:navigate href="{{ route('competitions.vote', $competition) }}" variant="primary" icon="hand-thumb-up">
-                                    Vote for Submissions
-                                </flux:button>
-                            @endif
-                        @elseif($competition->isClosed())
-                            <flux:callout variant="info" :heading="'This competition is closed.'" />
                         @endif
-                    @endif
+                    @else
+                        <a href="{{ route('login') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">Login to Participate</a>
+                    @endauth
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Submissions ({{ $submissions->count() }})</h2>
         
-        <div class="mt-8">
-            <flux:heading size="lg">Submissions ({{ $submissions->count() }})</flux:heading>
-            
-            @if($submissions->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                    @foreach($submissions as $submission)
-                        <flux:card>
-                            <img src="{{ Storage::url($submission->image_path) }}" 
-                                 alt="Submission by {{ $submission->user->name }}" 
-                                 class="rounded-lg shadow-lg max-w-full h-auto">
-                            
-                            <div class="mt-4">
-                                <flux:heading size="sm">By {{ $submission->user->name }}</flux:heading>
-                                
-                                @if($submission->description)
-                                    <p class="mt-2 text-gray-600 dark:text-gray-400 text-sm">
-                                        {{ $submission->description }}
-                                    </p>
+        @if($submissions->count() > 0)
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @foreach($submissions as $submission)
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <img src="{{ Storage::url($submission->image_path) }}" alt="Submission by {{ $submission->user->name }}" class="w-full h-64 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800">By {{ $submission->user->name }}</h3>
+                            @if($submission->description)
+                                <p class="mt-1 text-gray-600 text-sm">{{ Str::limit($submission->description, 80) }}</p>
+                            @endif
+                            <div class="mt-3 flex justify-between items-center">
+                                <span class="text-xs text-gray-500">{{ $submission->created_at->diffForHumans() }}</span>
+                                @if($competition->isVotingOpen() || $competition->isClosed())
+                                    <span class="font-bold text-sm text-gray-700">Votes: {{ $submission->votes_count ?? 0 }}</span>
                                 @endif
-                                
-                                <div class="mt-4 flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">
-                                        Submitted {{ $submission->created_at->format('M j, Y') }}
-                                    </span>
-                                    <span class="text-sm font-semibold">
-                                        {{ $submission->voteCount() }} votes
-                                    </span>
-                                </div>
                             </div>
-                        </flux:card>
-                    @endforeach
-                </div>
-            @else
-                <div class="mt-6 text-center py-12">
-                    <flux:icon name="photo" variant="outline" class="mx-auto h-12 w-12 text-gray-400" />
-                    <flux:heading class="mt-4">No submissions yet</flux:heading>
-                    <flux:subheading>Be the first to submit your painting!</flux:subheading>
-                </div>
-            @endif
-        </div>
-    </flux:card>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-16 bg-white rounded-lg shadow-md">
+                <p class="text-gray-500">No submissions yet. Be the first to enter!</p>
+            </div>
+        @endif
+    </div>
 </div>

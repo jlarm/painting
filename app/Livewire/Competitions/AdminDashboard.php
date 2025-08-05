@@ -7,9 +7,16 @@ use Livewire\Component;
 
 class AdminDashboard extends Component
 {
+    public function mount()
+    {
+        if (!auth()->user()?->isAdmin()) {
+            abort(403);
+        }
+    }
+
     public function render()
     {
-        $competitions = Competition::where('admin_id', auth()->id())
+        $competitions = Competition::withCount('submissions')
             ->orderBy('created_at', 'desc')
             ->get();
 

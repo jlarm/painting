@@ -15,11 +15,11 @@
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     
-                    @if(auth()->user()->isAdmin())
+                    @if(auth()->check() && auth()->user()->isAdmin())
                         <flux:navlist.item icon="folder-plus" :href="route('competitions.admin')" :current="request()->routeIs('competitions.admin')" wire:navigate>
                             Competitions
                         </flux:navlist.item>
-                    @else
+                    @elseif(auth()->check())
                         <flux:navlist.item icon="photo" :href="route('competitions.user')" :current="request()->routeIs('competitions.user')" wire:navigate>
                             Competitions
                         </flux:navlist.item>
@@ -42,8 +42,8 @@
             <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
                 <flux:profile
-                    :name="auth()->user()->name"
-                    :initials="auth()->user()->initials()"
+                    :name="auth()->check() ? auth()->user()->name : ''"
+                    :initials="auth()->check() ? auth()->user()->initials() : ''"
                     icon:trailing="chevrons-up-down"
                 />
 
@@ -55,13 +55,13 @@
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ auth()->user()->initials() }}
+                                        {{ auth()->check() ? auth()->user()->initials() : '' }}
                                     </span>
                                 </span>
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                    <span class="truncate font-semibold">{{ auth()->check() ? auth()->user()->name : 'Guest' }}</span>
+                                    <span class="truncate text-xs">{{ auth()->check() ? auth()->user()->email : '' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -93,7 +93,7 @@
 
             <flux:dropdown position="top" align="end">
                 <flux:profile
-                    :initials="auth()->user()->initials()"
+                    :initials="auth()->check() ? auth()->user()->initials() : ''"
                     icon-trailing="chevron-down"
                 />
 
@@ -105,13 +105,13 @@
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ auth()->user()->initials() }}
+                                        {{ auth()->check() ? auth()->user()->initials() : '' }}
                                     </span>
                                 </span>
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                    <span class="truncate font-semibold">{{ auth()->check() ? auth()->user()->name : 'Guest' }}</span>
+                                    <span class="truncate text-xs">{{ auth()->check() ? auth()->user()->email : '' }}</span>
                                 </div>
                             </div>
                         </div>

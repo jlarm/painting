@@ -16,14 +16,17 @@ class Show extends Component
     public function mount(Competition $competition)
     {
         $this->competition = $competition;
-        $this->userHasSubmitted = Submission::where('competition_id', $competition->id)
-            ->where('user_id', auth()->id())
-            ->exists();
-        
-        if ($competition->isVotingOpen() || $competition->isClosed()) {
-            $this->userHasVoted = Vote::where('competition_id', $competition->id)
-                ->where('voter_id', auth()->id())
+
+        if (auth()->check()) {
+            $this->userHasSubmitted = Submission::where('competition_id', $competition->id)
+                ->where('user_id', auth()->id())
                 ->exists();
+
+            if ($competition->isVotingOpen() || $competition->isClosed()) {
+                $this->userHasVoted = Vote::where('competition_id', $competition->id)
+                    ->where('voter_id', auth()->id())
+                    ->exists();
+            }
         }
     }
 
@@ -31,9 +34,11 @@ class Show extends Component
     {
         $submissions = $this->competition->submissions()
             ->with('user')
+            ->withCount('votes')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('livewire.competitions.show', compact('submissions'));
+        return view('livewire.competitions.show', compact('submissions'))
+            ->layout('components.layouts.public');
     }
 }

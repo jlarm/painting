@@ -12,10 +12,13 @@ use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('creative-welcome');
 })->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::get('/competitions/public', App\Livewire\Competitions\PublicCompetitions::class)->name('competitions.public');
+
+// Auth-protected routes
+Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         if (auth()->user()->isAdmin()) {
             return redirect()->route('competitions.admin');
@@ -24,13 +27,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         }
     })->name('dashboard');
 
+    // Specific competition routes first
     Route::get('/competitions', UserDashboard::class)->name('competitions.user');
     Route::get('/competitions/admin', AdminDashboard::class)->name('competitions.admin');
     Route::get('/competitions/create', Create::class)->name('competitions.create');
-    Route::get('/competitions/{competition}', Show::class)->name('competitions.show');
     Route::get('/competitions/{competition}/submit', Submit::class)->name('competitions.submit');
     Route::get('/competitions/{competition}/vote', Vote::class)->name('competitions.vote');
 });
+
+// Parameterized route last
+Route::get('/competitions/{competition}', Show::class)->name('competitions.show');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
