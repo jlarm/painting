@@ -1,4 +1,23 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    @if ($winner)
+        <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl shadow-lg mb-12 p-6 text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-repeat bg-center opacity-5" style="background-image: url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23ca8a04" fill-opacity="0.3" fill-rule="evenodd"%3E%3Cpath d="M0 40L40 0H20L0 20M40 40V20L20 40"/%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="relative">
+                <div class="flex justify-center items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 text-yellow-500 mr-4"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg>
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-800">Competition Winner!</h2>
+                </div>
+                <div class="mt-4 max-w-md mx-auto flex flex-col items-center">
+                    <img src="{{ Storage::url($winner->image_path) }}" alt="Winning submission by {{ $winner->user->name }}" class="w-48 h-48 rounded-lg object-cover border-4 border-yellow-400 shadow-md">
+                    <div class="mt-4">
+                        <p class="text-2xl font-extrabold text-gray-900">{{ $winner->user->name }}</p>
+                        <p class="text-gray-600 font-semibold">{{ $winner->votes_count }} Votes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-gray-900">{{ $competition->title }}</h1>
         @if($competition->description)

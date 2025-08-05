@@ -38,7 +38,14 @@ class Show extends Component
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('livewire.competitions.show', compact('submissions'))
-            ->layout('components.layouts.public');
+        $winner = null;
+        if ($this->competition->isClosed() && $submissions->isNotEmpty()) {
+            $winner = $submissions->sortByDesc('votes_count')->first();
+        }
+
+        return view('livewire.competitions.show', [
+            'submissions' => $submissions,
+            'winner' => $winner,
+        ])->layout('components.layouts.public');
     }
 }
